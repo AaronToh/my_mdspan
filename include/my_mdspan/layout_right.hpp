@@ -27,12 +27,28 @@ struct layout_right {
         constexpr const extents_type& extents() const noexcept { return extents_; }
 
         constexpr index_type required_span_size() const noexcept {
-            // TODO: product of all extents
-            return 0;
+            rank_type rank = extents_.rank();
+            index_type product = 1;
+            for (rank_type i = 0; i < rank; i++) {
+                product *= extents_.extent(i);
+            }
+            return product;
         }
 
         // operator() takes rank() indices and returns the flat offset
-        // TODO
+        template <class... Indices>
+        constexpr index_type operator()(Indices... vals) const noexcept {
+            constexpr rank_type rank = Extents::rank();
+            static_assert(rank == sizeof...(vals));
+            std::array<index_type, rank> indices = { static_cast<index_type>(vals)... };
+            index_type flat_index = 0;
+            index_type product = 1;
+            for (rank_type i = rank; i-- > 0; ) {
+                flat_index += product * indices[i];
+                product *= extents_.extent(i);
+            }
+            return flat_index;
+        }
 
     private:
         extents_type extents_;
