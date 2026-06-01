@@ -27,7 +27,7 @@ struct layout_right {
         constexpr const extents_type& extents() const noexcept { return extents_; }
 
         constexpr index_type required_span_size() const noexcept {
-            rank_type rank = extents_.rank();
+            rank_type rank = Extents::rank();
             index_type product = 1;
             for (rank_type i = 0; i < rank; i++) {
                 product *= extents_.extent(i);
