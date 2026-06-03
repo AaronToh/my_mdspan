@@ -48,7 +48,7 @@ int main() {
 
     // --- zero-size property: all-static extents should be empty ---
     // Uncomment once you've solved the conditional storage problem:
-    // static_assert(std::is_empty_v<my::extents<int, 3, 4>>);
+    static_assert(std::is_empty_v<my::extents<int, 3, 4>>);
 
     return 0;
 }

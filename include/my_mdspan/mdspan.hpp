@@ -1,6 +1,7 @@
 #pragma once
 #include "extents.hpp"
 #include "layout_right.hpp"
+#include "layout_left.hpp"
 #include "accessor_default.hpp"
 
 namespace my {
@@ -45,6 +46,11 @@ public:
     // Element access: m(i, j, ...)
     // TODO: implement using mapping_(indices...) to get offset,
     //       then accessor_.access(ptr_, offset)
+    template <class... Indices>
+    constexpr element_type& operator()(Indices... vals) const noexcept {
+        index_type i = mapping_(vals...);
+        return accessor_.access(ptr_, i);
+    }
 
     constexpr const extents_type& extents() const noexcept { return mapping_.extents(); }
     constexpr const mapping_type& mapping() const noexcept { return mapping_; }
@@ -53,8 +59,7 @@ public:
     constexpr index_type extent(rank_type r) const noexcept { return extents().extent(r); }
 
     constexpr index_type size() const noexcept {
-        // TODO: product of all extents
-        return 0;
+        return mapping_.required_span_size();
     }
 
 private:
