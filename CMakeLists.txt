@@ -17,6 +17,7 @@ foreach(test_name
     test_layout
     test_mdspan
     test_layout_stride
+    test_submdspan
 )
     add_executable(${test_name} tests/${test_name}.cpp)
     target_link_libraries(${test_name} PRIVATE my_mdspan)

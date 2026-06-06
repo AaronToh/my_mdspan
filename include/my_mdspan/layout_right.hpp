@@ -38,7 +38,7 @@ struct layout_right {
         constexpr index_type stride(rank_type r) const noexcept {
             constexpr rank_type rank = Extents::rank();
             index_type s = 1;
-            for (rank_type i = rank; i-- > r; ) {
+            for (rank_type i = rank; i-- > r + 1; ) {
                 s *= extents_.extent(i);
             }
             return s;

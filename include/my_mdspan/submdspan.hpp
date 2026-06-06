@@ -1,5 +1,6 @@
 #pragma once
-#include "my_mdspan/mdspan.hpp"
+#include "mdspan.hpp"
+#include "layout_stride.hpp"
 
 namespace my {
 
@@ -43,7 +44,7 @@ auto submdspan(const mdspan<ElementType, Extents, LayoutPolicy, AccessorPolicy>&
     };
     (process_one(slices), ...);
     auto e = make_dynamic_extents(result_extents, std::make_index_sequence<rank>{});
-    layout_stride::mapping m(e, result_strides);
+    layout_stride::mapping<decltype(e)> m(e, result_strides);
     return mdspan<ElementType, decltype(e), layout_stride>(src.data_handle() + result_offs, m);
 }
 }
