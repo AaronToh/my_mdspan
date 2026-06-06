@@ -32,6 +32,15 @@ struct layout_left {
             }
             return product;
         }
+        
+        constexpr index_type stride(rank_type r) const noexcept {
+            constexpr rank_type rank = Extents::rank();
+            index_type s = 1;
+            for (rank_type i = 0; i < rank; i++) {
+                s *= extents_.extent(i);
+            }
+            return s;
+        }
 
         // TODO: operator() with reversed stride order
         template <class... Indices>

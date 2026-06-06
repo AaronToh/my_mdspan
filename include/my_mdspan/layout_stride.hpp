@@ -26,6 +26,10 @@ struct layout_stride {
             }
             return size;
         }
+
+        constexpr index_type stride(rank_type r) const noexcept {
+            return strides_[r];
+        }
         
         template <class... Indices>
         constexpr index_type operator()(Indices... vals) const noexcept {

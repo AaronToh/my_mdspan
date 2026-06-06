@@ -35,6 +35,15 @@ struct layout_right {
             return product;
         }
 
+        constexpr index_type stride(rank_type r) const noexcept {
+            constexpr rank_type rank = Extents::rank();
+            index_type s = 1;
+            for (rank_type i = rank; i-- > r; ) {
+                s *= extents_.extent(i);
+            }
+            return s;
+        }
+
         // operator() takes rank() indices and returns the flat offset
         template <class... Indices>
         constexpr index_type operator()(Indices... vals) const noexcept {
