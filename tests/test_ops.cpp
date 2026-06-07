@@ -90,5 +90,23 @@ int main() {
         assert(result(1) == 15);
     }
 
+    {
+        int data[24] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
+        int out[6];
+
+        my::mdspan<int, my::extents<int, 2, 3, 4>> in(data, my::extents<int, 2, 3, 4>{});
+        my::mdspan<int, my::extents<int, 2, 3>, my::layout_left> result(out, my::extents<int, 2, 3>{});
+
+        my::reduce(in, result, 2, 1, [](int a, int b){ return a * b; });
+
+        assert(result(0, 0) == 24);
+        assert(result(0, 1) == 1680);
+        assert(result(0, 2) == 11880);
+        assert(result(1, 0) == 43680);
+        assert(result(1, 1) == 116280);
+        assert(result(1, 2) == 255024);
+ 
+    }
+
     return 0;
 }
