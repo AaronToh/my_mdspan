@@ -108,5 +108,24 @@ int main() {
  
     }
 
+    {
+        int a[4] = {2, 1, 1, 4};
+        int b[6] = {1, 0, 2, 1, 0, 2};
+        int c[6];
+
+        my::mdspan<int, my::extents<int, 2, 2>> ma(a, my::extents<int, 2, 2>{});
+        my::mdspan<int, my::extents<int, 2, 3>, my::layout_left> mb(b, my::extents<int, 2, 3>{});
+        my::mdspan<int, my::extents<int, 2, 3>> mc(c, my::extents<int, 2, 3>{});
+        
+        my::matmul(ma, mb, mc);
+
+        assert(mc(0, 0) == 2);
+        assert(mc(0, 1) == 5);
+        assert(mc(0, 2) == 2);
+        assert(mc(1, 0) == 1);
+        assert(mc(1, 1) == 6);
+        assert(mc(1, 2) == 8);
+    }
+
     return 0;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "mdspan.hpp"
+#include <cassert>
 
 namespace my {
 
@@ -128,6 +129,35 @@ void reduce(
     std::array<index_type, ExtentsIn::rank()> idx_in{};
     std::array<index_type, ExtentsOut::rank()> idx_out{};
     detail::reduce_helper(in, out, axis, init, op, idx_in, idx_out, 0, 0);
+}
+
+template<
+    class ElementType,
+    class ExtentsA,
+    class ExtentsB,
+    class ExtentsC,
+    class LayoutPolicyA,
+    class LayoutPolicyB,
+    class LayoutPolicyC,
+    class AccessorPolicy
+>
+void matmul(
+    const mdspan<ElementType, ExtentsA, LayoutPolicyA, AccessorPolicy>& a,
+    const mdspan<ElementType, ExtentsB, LayoutPolicyB, AccessorPolicy>& b,
+    mdspan<ElementType, ExtentsC, LayoutPolicyC, AccessorPolicy>& c
+) {
+    static_assert(ExtentsA::rank() == 2 && ExtentsB::rank() == 2);
+    assert(a.extent(1) == b.extent(0));
+    assert(c.extent(0) == a.extent(0) && c.extent(1) == b.extent(1));
+
+    for (size_t i = 0; i < a.extent(0); i++) {
+        for (size_t j = 0; j < b.extent(1); j++) {
+            c(i, j) = 0;
+            for (size_t k = 0; k < a.extent(1); k++) {
+                c(i, j) += a(i, k) * b(k, j);
+            }
+        }
+    }
 }
 
 } // namespace my
