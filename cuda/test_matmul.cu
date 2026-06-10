@@ -61,6 +61,45 @@ int main() {
         cudaFree(d_c);
     }
 
+    // --- benchmark: 1024x1024 * 1024x1024 ---
+    {
+        int M = 1024, K = 1024, N = 1024;
+        int shape_a[2] = {M, K}, stride_a[2] = {K, 1};
+        int shape_b[2] = {K, N}, stride_b[2] = {N, 1};
+        int shape_c[2] = {M, N}, stride_c[2] = {N, 1};
+
+        float* d_a; cudaMalloc(&d_a, sizeof(float) * M * K);
+        float* d_b; cudaMalloc(&d_b, sizeof(float) * K * N);
+        float* d_c; cudaMalloc(&d_c, sizeof(float) * M * N);
+
+        cuda_my::TensorRef<float, 2> ta(d_a, shape_a, stride_a);
+        cuda_my::TensorRef<float, 2> tb(d_b, shape_b, stride_b);
+        cuda_my::TensorRef<float, 2> tc(d_c, shape_c, stride_c);
+
+        // warmup
+        cuda_my::matmul(ta, tb, tc);
+        cudaDeviceSynchronize();
+
+        cudaEvent_t start, stop;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+
+        cudaEventRecord(start);
+        cuda_my::matmul(ta, tb, tc);
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+
+        float ms = 0;
+        cudaEventElapsedTime(&ms, start, stop);
+        printf("naive 1024x1024: %.3f ms\n", ms);
+
+        cudaEventDestroy(start);
+        cudaEventDestroy(stop);
+        cudaFree(d_a);
+        cudaFree(d_b);
+        cudaFree(d_c);
+    }
+
     printf("all tests passed\n");
     return 0;
 }
