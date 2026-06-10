@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(my_mdspan LANGUAGES CXX)
+project(my_mdspan LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -24,3 +24,12 @@ foreach(test_name
     target_link_libraries(${test_name} PRIVATE my_mdspan)
     add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()
+
+# CUDA targets (only built if CUDA is available)
+find_package(CUDAToolkit QUIET)
+if(CUDAToolkit_FOUND)
+    add_executable(test_matmul_cuda cuda/test_matmul.cu cuda/matmul.cu)
+    target_include_directories(test_matmul_cuda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cuda)
+    set_target_properties(test_matmul_cuda PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+    add_test(NAME test_matmul_cuda COMMAND test_matmul_cuda)
+endif()
