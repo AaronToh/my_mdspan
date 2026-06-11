@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(my_mdspan LANGUAGES CXX CUDA)
+project(my_mdspan LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,6 +19,7 @@ foreach(test_name
     test_layout_stride
     test_submdspan
     test_ops
+    test_mdarray
 )
     add_executable(${test_name} tests/${test_name}.cpp)
     target_link_libraries(${test_name} PRIVATE my_mdspan)
@@ -28,6 +29,7 @@ endforeach()
 # CUDA targets (only built if CUDA is available)
 find_package(CUDAToolkit QUIET)
 if(CUDAToolkit_FOUND)
+    enable_language(CUDA)
     add_executable(test_matmul_cuda cuda/test_matmul.cu cuda/matmul.cu)
     target_include_directories(test_matmul_cuda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cuda)
     set_target_properties(test_matmul_cuda PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
