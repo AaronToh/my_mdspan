@@ -93,6 +93,14 @@ int main() {
         cudaEventElapsedTime(&ms, start, stop);
         printf("naive 1024x1024: %.3f ms\n", ms);
 
+        cudaEventRecord(start);
+        cuda_my::tiled_matmul(ta, tb, tc);
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+
+        cudaEventElapsedTime(&ms, start, stop);
+        printf("tiled 1024x1024: %.3f ms\n", ms);
+
         cudaEventDestroy(start);
         cudaEventDestroy(stop);
         cudaFree(d_a);

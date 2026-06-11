@@ -28,6 +28,34 @@ __global__ void matmul_kernel(TensorRef<float, 2> a, TensorRef<float, 2> b, Tens
     c(row, col) = acc;
 }
 
+__global__ void tiled_matmul_kernel(TensorRef<float, 2> a, TensorRef<float, 2> b, TensorRef<float, 2> c) {
+    __shared__ float smem_a[BLOCK_SIZE][BLOCK_SIZE];
+    __shared__ float smem_b[BLOCK_SIZE][BLOCK_SIZE];
+
+    int K = a.shape[1];
+    int tx = threadIdx.x;
+    int ty = threadIdx.y;
+    int row = blockIdx.x * BLOCK_SIZE + tx;
+    int col = blockIdx.y * BLOCK_SIZE + ty;
+
+    float acc = 0.0f;
+
+    for (int block_start = 0; block_start < K; block_start += BLOCK_SIZE) {
+        smem_a[tx][ty] = (row < a.shape[0] && block_start + ty < K) ? a(row, block_start + ty) : 0.0f;
+        smem_b[tx][ty] = (block_start + tx < K && col < b.shape[1]) ? b(block_start + tx, col) : 0.0f;
+        __syncthreads();
+
+        for (int i = 0; i < BLOCK_SIZE; i++) {
+            acc += smem_a[tx][i] * smem_b[i][ty];
+        }
+        __syncthreads();
+    }
+
+    if (row < a.shape[0] && col < b.shape[1]) {
+        c(row, col) = acc;
+    }
+}
+
 // --- Launcher ---
 // Decide on a block size, compute the grid dimensions, launch the kernel.
 // Think about: if M=5 and blockDim=4, how many blocks do you need in that dimension?
@@ -38,6 +66,14 @@ void matmul(TensorRef<float, 2> a, TensorRef<float, 2> b, TensorRef<float, 2> c)
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 gridsPerBlock((R + threadsPerBlock.x - 1) / threadsPerBlock.x, (C + threadsPerBlock.y - 1) / threadsPerBlock.y);
     matmul_kernel<<<gridsPerBlock, threadsPerBlock>>>(a, b, c);
+}
+
+void tiled_matmul(TensorRef<float, 2> a, TensorRef<float, 2> b, TensorRef<float, 2> c) {
+    int R = a.shape[0];
+    int C = b.shape[1];
+    dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
+    dim3 gridsPerBlock((R + threadsPerBlock.x - 1) / threadsPerBlock.x, (C + threadsPerBlock.y - 1) / threadsPerBlock.y);
+    tiled_matmul_kernel<<<gridsPerBlock, threadsPerBlock>>>(a, b, c);
 }
 
 } // namespace cuda_my

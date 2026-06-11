@@ -4,5 +4,6 @@
 namespace cuda_my {
 
 void matmul(TensorRef<float, 2> a, TensorRef<float, 2> b, TensorRef<float, 2> c);
+void tiled_matmul(TensorRef<float, 2> a, TensorRef<float, 2> b, TensorRef<float, 2> c);
 
 } // namespace cuda_my
