@@ -48,7 +48,7 @@ int main() {
         a(0)=1; a(1)=2; a(2)=3; a(3)=4;
         b(0)=10; b(1)=20; b(2)=30; b(3)=40;
         auto va = a.view(); auto vb = b.view(); auto vc = c.view();
-        my::add(va, vb, vc);
+        my::cpu::add(va, vb, vc);
         assert(c(0) == 11);
         assert(c(3) == 44);
     }

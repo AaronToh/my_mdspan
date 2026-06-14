@@ -12,7 +12,7 @@ int main() {
         my::mdspan<int, my::extents<int, 4>> mb(b, my::extents<int, 4>{});
         my::mdspan<int, my::extents<int, 4>> mc(c, my::extents<int, 4>{});
 
-        my::add(ma, mb, mc);
+        my::cpu::add(ma, mb, mc);
 
         assert(mc(0) == 11);
         assert(mc(1) == 22);
@@ -30,7 +30,7 @@ int main() {
         my::mdspan<int, my::extents<int, 2, 3>> mb(b, my::extents<int, 2, 3>{});
         my::mdspan<int, my::extents<int, 2, 3>> mc(c, my::extents<int, 2, 3>{});
 
-        my::add(ma, mb, mc);
+        my::cpu::add(ma, mb, mc);
 
         assert(mc(0, 0) == 11);
         assert(mc(0, 1) == 22);
@@ -49,7 +49,7 @@ int main() {
         my::mdspan<int, my::extents<int, 2, 3>, my::layout_left> mb(b, my::extents<int, 2, 3>{});
         my::mdspan<int, my::extents<int, 2, 3>> mc(c, my::extents<int, 2, 3>{});
 
-        my::add(ma, mb, mc);
+        my::cpu::add(ma, mb, mc);
 
         assert(mc(0, 0) == 11);
         assert(mc(0, 1) == 32);
@@ -68,7 +68,7 @@ int main() {
         my::mdspan<int, my::extents<int, 2, 3>> in(data, my::extents<int, 2, 3>{});
         my::mdspan<int, my::extents<int, 3>> result(out, my::extents<int, 3>{});
 
-        my::reduce(in, result, 0, 0, [](int a, int b){ return a + b; });
+        my::cpu::reduce(in, result, 0, 0, [](int a, int b){ return a + b; });
 
         assert(result(0) == 5);
         assert(result(1) == 7);
@@ -84,7 +84,7 @@ int main() {
         my::mdspan<int, my::extents<int, 2, 3>> in(data, my::extents<int, 2, 3>{});
         my::mdspan<int, my::extents<int, 2>> result(out, my::extents<int, 2>{});
 
-        my::reduce(in, result, 1, 0, [](int a, int b){ return a + b; });
+        my::cpu::reduce(in, result, 1, 0, [](int a, int b){ return a + b; });
 
         assert(result(0) == 6);
         assert(result(1) == 15);
@@ -97,7 +97,7 @@ int main() {
         my::mdspan<int, my::extents<int, 2, 3, 4>> in(data, my::extents<int, 2, 3, 4>{});
         my::mdspan<int, my::extents<int, 2, 3>, my::layout_left> result(out, my::extents<int, 2, 3>{});
 
-        my::reduce(in, result, 2, 1, [](int a, int b){ return a * b; });
+        my::cpu::reduce(in, result, 2, 1, [](int a, int b){ return a * b; });
 
         assert(result(0, 0) == 24);
         assert(result(0, 1) == 1680);
@@ -117,7 +117,7 @@ int main() {
         my::mdspan<int, my::extents<int, 2, 3>, my::layout_left> mb(b, my::extents<int, 2, 3>{});
         my::mdspan<int, my::extents<int, 2, 3>> mc(c, my::extents<int, 2, 3>{});
         
-        my::matmul(ma, mb, mc);
+        my::cpu::matmul(ma, mb, mc);
 
         assert(mc(0, 0) == 2);
         assert(mc(0, 1) == 5);

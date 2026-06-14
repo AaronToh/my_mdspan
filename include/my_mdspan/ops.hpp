@@ -90,6 +90,8 @@ void reduce_helper(
 
 } // namespace detail
 
+namespace cpu {
+
 template <
     class ElementType,
     class Extents,
@@ -159,5 +161,7 @@ void matmul(
         }
     }
 }
+
+} // namespace cpu
 
 } // namespace my

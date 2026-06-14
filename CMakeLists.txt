@@ -20,6 +20,7 @@ foreach(test_name
     test_submdspan
     test_ops
     test_mdarray
+    test_dispatch
 )
     add_executable(${test_name} tests/${test_name}.cpp)
     target_link_libraries(${test_name} PRIVATE my_mdspan)
