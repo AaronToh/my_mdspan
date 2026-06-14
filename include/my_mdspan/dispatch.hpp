@@ -2,6 +2,7 @@
 #include "device.hpp"
 #include "mdspan.hpp"
 #include "ops.hpp"
+#include <stdexcept>
 #ifdef __CUDACC__
 #include "../../cuda/matmul.hpp"
 #endif

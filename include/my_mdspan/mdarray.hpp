@@ -1,6 +1,7 @@
 #pragma once
 #include "device.hpp"
 #include "mdspan.hpp"
+#include <stdexcept>
 
 namespace my {
 
