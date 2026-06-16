@@ -10,11 +10,11 @@ The project began as a learning exercise to implement `std::mdspan` from scratch
 
 ### Mdspan Template Parameters
 
-Following [P0009](https://wg21.link/p0009), both rank and extents are template parameters. Rank must be known at compile time to support multi-index element access, and static extents cost nothing at runtime since the sizes are baked into the type. Dynamic extents are also supported — `extents<int, dynamic_extent, 4>` stores one runtime value and bakes the `4` into the type.
+Following [P0009](https://wg21.link/p0009), both rank and extents are template parameters. Knowing extents at compile time enables compiler optimisations and conserves stack space since the sizes are baked into the type. Many use cases like modelling physical 3D space allow us to know this in advance. Dynamic extents are also supported for cases where sizes are only known at runtime — `extents<int, dynamic_extent, 4>` stores one runtime value and bakes the `4` into the type.
 
 ### Submdspan
 
-Implemented slicing via `submdspan`, which returns a non-owning view into a subset of an mdspan. The key insight is that any rectangular subregion of a strided layout can itself be described with a `layout_stride` mapping — you just adjust the base pointer and compute new strides from the slice parameters.
+Implemented slicing via `submdspan` as described in [P0009](https://wg21.link/p0009), which returns a non-owning view into a subset of an mdspan. There are many use cases for this, for example passing a row of a 2D matrix as a subspan to a dot product function. Any rectangular subregion of a strided layout can be described with a `layout_stride` mapping by adjusting the base pointer and computing new strides from the slice parameters.
 
 ### Mdarray
 
