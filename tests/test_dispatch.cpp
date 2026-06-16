@@ -4,7 +4,6 @@
 int main() {
     // CPU matmul via dispatch
     {
-        // TODO: construct two mdarrays, call my::matmul(..., Device::CPU), assert results
         int a[4] = {2, 1, 1, 4};
         int b[6] = {1, 0, 2, 1, 0, 2};
         int c[6];
@@ -37,9 +36,9 @@ int main() {
         cudaMemcpy(da, ha, 4 * sizeof(float), cudaMemcpyHostToDevice);
         cudaMemcpy(db, hb, 6 * sizeof(float), cudaMemcpyHostToDevice);
 
-        my::mdspan<float, my::extents<float, 2, 2>> ma(da, my::extents<float, 2, 2>{}, my::Device::CUDA);
-        my::mdspan<float, my::extents<float, 2, 3>, my::layout_left> mb(db, my::extents<float, 2, 3>{}, my::Device::CUDA);
-        my::mdspan<float, my::extents<float, 2, 3>> mc(dc, my::extents<float, 2, 3>{}, my::Device::CUDA);
+        my::mdspan<float, my::extents<int, 2, 2>> ma(da, my::extents<int, 2, 2>{}, my::Device::CUDA);
+        my::mdspan<float, my::extents<int, 2, 3>, my::layout_left> mb(db, my::extents<int, 2, 3>{}, my::Device::CUDA);
+        my::mdspan<float, my::extents<int, 2, 3>> mc(dc, my::extents<int, 2, 3>{}, my::Device::CUDA);
 
         my::matmul(ma, mb, mc);
 

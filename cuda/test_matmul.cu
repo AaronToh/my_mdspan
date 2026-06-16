@@ -1,6 +1,7 @@
 #include "matmul.hpp"
 #include <cassert>
 #include <cstdio>
+#include <cublas_v2.h>
 
 // Host-side test harness.
 //
@@ -100,6 +101,26 @@ int main() {
 
         cudaEventElapsedTime(&ms, start, stop);
         printf("tiled 1024x1024: %.3f ms\n", ms);
+
+        float alpha = 1.0f, beta = 0.0f;
+        cublasHandle_t handle;
+        cublasCreate(&handle);
+
+        // warmup: cuBLAS JIT-compiles the kernel on first call
+        cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                    N, M, K, &alpha, d_b, N, d_a, K, &beta, d_c, N);
+        cudaDeviceSynchronize();
+
+        cudaEventRecord(start);
+        cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                    N, M, K, &alpha, d_b, N, d_a, K, &beta, d_c, N);
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+
+        cudaEventElapsedTime(&ms, start, stop);
+        printf("cublas 1024x1024: %.3f ms\n", ms);
+
+        cublasDestroy(handle);
 
         cudaEventDestroy(start);
         cudaEventDestroy(stop);
