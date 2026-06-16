@@ -22,9 +22,9 @@ Implemented slicing via `submdspan` as described in [P0009](https://wg21.link/p0
 
 ### API Dispatch
 
-Operations take `mdspan` rather than `mdarray`. The motivation is separation of concerns — if ops took `mdarray` they'd be coupled to ownership and allocation. By taking a non-owning view, the op doesn't care whether the data came from `mdarray`, a stack array, a `std::vector`, or a raw CUDA malloc. `mdarray::view()` exists to hand off a span when you want to call an op.
+Operations take `mdspan` rather than `mdarray`. By taking a non-owning view, the op doesn't care whether the data came from `mdarray`, a stack array, a `std::vector`, or a raw CUDA malloc. `mdarray::view()` exists to hand off a span when you want to call an op.
 
-The device is stored on the span itself rather than passed as a parameter to the op. Passing device as a parameter is error-prone — the caller could pass the wrong device for the data. Storing it as an invariant of the span makes that class of bug impossible.
+The device is stored on the span itself rather than passed as a parameter to the op. Passing device as a parameter is error-prone as the caller could pass the wrong device for the data. Storing it as an invariant of the span makes that class of bug impossible.
 
 For GPU kernels, `mdspan` can't be used directly since it depends on STL and isn't `__device__`-compatible. Instead, `TensorRef` is a stripped-down GPU-side view with plain C arrays and `__host__ __device__` qualifiers. The dispatch layer builds a `TensorRef` from the mdspan's pointer and strides before launching the kernel.
 
