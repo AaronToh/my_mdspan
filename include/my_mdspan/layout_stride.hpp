@@ -19,7 +19,7 @@ struct layout_stride {
         constexpr const strides_type& strides() const noexcept { return strides_; }
 
         constexpr index_type required_span_size() const noexcept {
-            rank_type rank = Extents::rank();
+            constexpr rank_type rank = Extents::rank();
             index_type size = 1;
             for (rank_type i = 0; i < rank; i++) {
                 size += (extents_.extent(i) - 1) * strides_[i];
@@ -48,4 +48,5 @@ struct layout_stride {
         strides_type strides_;
     };
 };
-}
+
+} // namespace my

@@ -7,15 +7,6 @@
 
 namespace my {
 
-// mdspan: a non-owning view into a multidimensional array.
-// It holds:
-//   - a data handle (pointer)
-//   - a mapping (layout policy applied to extents)
-//   - an accessor (how to turn pointer+offset into a reference)
-//
-// TODO: implement operator() to access elements
-// TODO: implement size(), empty(), and the extents()/mapping() accessors
-
 template <
     class ElementType,
     class Extents,
@@ -44,9 +35,6 @@ public:
     constexpr mdspan(data_handle_type p, const mapping_type& m, Device d = Device::CPU)
         : ptr_(p), mapping_(m), accessor_(), device_(d) {}
 
-    // Element access: m(i, j, ...)
-    // TODO: implement using mapping_(indices...) to get offset,
-    //       then accessor_.access(ptr_, offset)
     template <class... Indices>
     constexpr element_type& operator()(Indices... vals) const noexcept {
         index_type i = mapping_(vals...);

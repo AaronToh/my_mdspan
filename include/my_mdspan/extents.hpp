@@ -7,21 +7,6 @@ namespace my {
 
 inline constexpr std::size_t dynamic_extent = static_cast<std::size_t>(-1);
 
-// TODO: implement extents
-//
-// Requirements:
-//   - index_type  = IndexType
-//   - size_type   = make_unsigned_t<IndexType>
-//   - rank_type   = size_t
-//   - static constexpr rank_type rank()         — number of dimensions
-//   - static constexpr rank_type rank_dynamic() — how many are dynamic_extent
-//   - constexpr index_type extent(rank_type i)  — size of dimension i
-//
-// Key design challenge:
-//   Static extents should not occupy any storage (is_empty when rank_dynamic==0).
-//   Dynamic extents need to store their runtime value somewhere.
-//   Figure out how to do this with a single class template.
-
 template <class IndexType, std::size_t... Extents>
 class extents {
 public:
@@ -47,7 +32,6 @@ public:
         dynamic_vals = { static_cast<index_type>(vals)... };
     }
 
-    // TODO: figure out how to accept only the dynamic values
     constexpr index_type extent(rank_type i) const noexcept {
         if (static_exts[i] != dynamic_extent) return static_cast<index_type>(static_exts[i]);
         size_t dynamic_i = 0;
