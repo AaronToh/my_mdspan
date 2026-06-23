@@ -10,11 +10,11 @@ The project began as a learning exercise to implement `std::mdspan` from scratch
 
 ### Mdspan Template Parameters
 
-Following [P0009](https://wg21.link/p0009), both rank and extents are template parameters. Knowing extents at compile time enables compiler optimisations and conserves stack space since the sizes are baked into the type. Many use cases like modelling physical 3D space allow us to know this in advance. Dynamic extents are also supported for cases where sizes are only known at runtime — `extents<int, dynamic_extent, 4>` stores one runtime value and bakes the `4` into the type.
+Following [P0009](https://wg21.link/p0009), both rank and extents are template parameters. Knowing extents at compile time enables compiler optimisations and conserves stack space since the sizes are baked into the type. Many use cases like modelling physical 3D space allow us to know this in advance. Dynamic extents are also supported for cases where sizes are only known at runtime.
 
 ### Submdspan
 
-Implemented slicing via `submdspan` as described in [P0009](https://wg21.link/p0009), which returns a non-owning view into a subset of an mdspan. There are many use cases for this, for example passing a row of a 2D matrix as a subspan to a dot product function. Any rectangular subregion of a strided layout can be described with a `layout_stride` mapping by adjusting the base pointer and computing new strides from the slice parameters.
+Implemented slicing via `submdspan` as described in [P0009](https://wg21.link/p0009), which returns a non-owning view into a subset of an mdspan. There are many use cases for this, for example passing a row of a 2D matrix as a subspan to an existing dot product function.
 
 ### Mdarray
 
@@ -22,9 +22,7 @@ Implemented slicing via `submdspan` as described in [P0009](https://wg21.link/p0
 
 ### API Dispatch
 
-Operations take `mdspan` rather than `mdarray`. By taking a non-owning view, the op doesn't care whether the data came from `mdarray`, a stack array, a `std::vector`, or a raw CUDA malloc. `mdarray::view()` exists to hand off a span when you want to call an op.
-
-The device is stored on the span itself rather than passed as a parameter to the op. Passing device as a parameter is error-prone as the caller could pass the wrong device for the data. Storing it as an invariant of the span makes that class of bug impossible.
+For my matmul api dispatch, the device (CPU or GPU) is stored on the argument spans themselves rather than passed as a parameter to the op. Passing device as a parameter is error-prone as the caller could pass the wrong device for the data. Storing it as an invariant of the span makes that class of bug impossible.
 
 For GPU kernels, `mdspan` can't be used directly since it depends on STL and isn't `__device__`-compatible. Instead, `TensorRef` is a stripped-down GPU-side view with plain C arrays and `__host__ __device__` qualifiers. The dispatch layer builds a `TensorRef` from the mdspan's pointer and strides before launching the kernel.
 
